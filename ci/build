@@ -1,0 +1,25 @@
+#!/bin/bash
+set -euo pipefail
+
+NAME='geoip-updater'
+GCR_IMAGE="us.gcr.io/steam-canto-177116/${NAME}"
+ECS_IMAGE="584250103954.dkr.ecr.us-east-1.amazonaws.com/${NAME}"
+AWS_REGION='us-east-1'
+TAG=${1:-$TAG}
+
+gcloud auth configure-docker --quiet
+eval $( aws ecr get-login --no-include-email --region ${AWS_REGION} )
+
+docker build -t ${NAME} .
+
+docker tag ${NAME}:latest ${GCR_IMAGE}:${TAG}
+docker push ${GCR_IMAGE}:${TAG}
+docker tag ${NAME}:latest ${ECS_IMAGE}:${TAG}
+docker push ${ECS_IMAGE}:${TAG}
+
+if [[ "$BUILDKITE_PULL_REQUEST" || "$BUILDKITE_BRANCH" == "master" ]]; then
+  docker tag ${NAME}:latest ${GCR_IMAGE}:latest
+  docker push ${GCR_IMAGE}:latest
+  docker tag ${NAME}:latest ${ECS_IMAGE}:latest
+  docker push ${ECS_IMAGE}:latest
+fi
