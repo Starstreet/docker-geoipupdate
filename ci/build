@@ -3,7 +3,7 @@ set -euo pipefail
 
 NAME='geoip-updater'
 GCR_IMAGE="us.gcr.io/steam-canto-177116/${NAME}"
-ECS_IMAGE="584250103954.dkr.ecr.us-east-1.amazonaws.com/${NAME}"
+ECS_IMAGE="077700697743.dkr.ecr.us-east-1.amazonaws.com/${NAME}"
 AWS_REGION='us-east-1'
 TAG=${1:-$TAG}
 
